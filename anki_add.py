@@ -18,15 +18,17 @@ def invoke(action, **params):
         raise Exception(response['error'])
     return response['result']
 
-def add_notes(deck_name, model_name, target_field, vocabulary):
+def add_notes(deck_name, model_name, vocabulary):
     """
     Adds multiple notes to Anki
     """
     notes = []
     for entry in vocabulary:
-        fields = {}
-        for target in target_field:
-            fields[target] = entry[target_field[target]]
+        fields = {
+            "Target Language": entry["script"],  # Farsi script
+            "Own Language": entry["english"],  # English translation
+            "Phonetic": entry["persian"]  # Transliteration
+        }
         
         # Create note object
         note = {
@@ -47,4 +49,26 @@ def add_notes(deck_name, model_name, target_field, vocabulary):
             print(f"Added term: {term}")
         print("Success: All terms added to the deck.")
     else:
-        print("ANKI Error: Failed to add notes.")
+        print("Error: Failed to add notes.")
+
+if __name__ == "__main__":
+    # First, make sure Anki is running and AnkiConnect is installed
+    try:
+        
+        # Test connection to AnkiConnect
+        result = invoke('deckNames')
+        print('got list of decks:', result)
+
+        # Sample vocabulary data
+        vocab_data = json.loads(get_vocab())
+
+        # Define the deck and model names
+        deck_name = 'test1'
+        model_name = 'Language'
+
+        # Add notes
+        result = add_notes(deck_name, model_name, vocab_data['vocabulary'])
+        print('Notes added:', result)
+
+    except Exception as e:
+        print(f"Details: {e}")

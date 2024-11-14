@@ -34,7 +34,7 @@ def analyze_html_structure(headers: List[str], example_entry: List[str], html_co
     {{
         "vocabulary": [
             {{
-                {', '.join(f'"{header.lower()}": "example"' for header in headers)}
+                {', '.join(f'"{header}": "example"' for header in headers)}
             }}
         ],
         "metadata": {{
@@ -45,10 +45,9 @@ def analyze_html_structure(headers: List[str], example_entry: List[str], html_co
 
     Rules:
     1. Extract only raw text (ignore audio, formatting)
-    2. Use lowercase keys for consistency
-    3. Ensure each entry has all fields, in the correct order
-    4. Preserve exact spelling and characters as shown in the HTML content
-    5. Use the first example to ensure correct field mapping and formatting
+    2. Ensure each entry has all fields, in the correct order
+    3. Preserve exact spelling and characters as shown in the HTML content
+    4. Use the first example to ensure correct field mapping and formatting
     """
 
     user_prompt = f"Extract vocabulary terms from this HTML using these headers: {headers}\n\nHTML content:\n{html_content}"
@@ -110,7 +109,7 @@ def validate_response(data: Dict, expected_headers: List[str]) -> None:
         raise ValueError("No vocabulary entries found")
     
     # Check all entries have all required fields
-    expected_fields = [header.lower() for header in expected_headers]
+    expected_fields = [header for header in expected_headers]
     for entry in data["vocabulary"]:
         missing_fields = [field for field in expected_fields if field not in entry]
         if missing_fields:

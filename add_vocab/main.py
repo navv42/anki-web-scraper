@@ -35,8 +35,10 @@ def main():
     headers = [header.strip() for header in input("Please provide the headers for the vocabulary terms (comma-separated): ").split(',')]
 
     # Step 4: Get example entries for each header
-    example_entry = []
+    target_fields, example_entry = {}, []
     for header in headers:
+        target = input(f"For '{header}', what is the corresponding Anki field? ")
+        target_fields[target] = header
         entry = input(f"Please provide an example entry for '{header}': ")
         example_entry.append(entry)
 
@@ -58,6 +60,7 @@ def main():
     
     try:
         vocab_data = get_vocab(headers, example_entry, html_content)
+        print(vocab_data)
     finally:
         STOP_SPINNER = True  
         spinner_thread.join()  
@@ -68,8 +71,14 @@ def main():
         print("Error: Failed to analyze HTML structure.")
         return
     
+    print("Please review the extracted vocabulary data above.\n")
+    confirmation = input("Do you want to add these notes to the deck? (y/n): ").strip().lower()
+    if confirmation != 'y':
+        print("Operation cancelled by user.")
+        return
+    
     # Step 7: Add notes to the selected deck
-    add_notes(deck_name, "Language", vocab_data['vocabulary'])
+    add_notes(deck_name, "Language", target_fields, vocab_data['vocabulary'])
 
 if __name__ == "__main__":
     main()
